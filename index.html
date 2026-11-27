@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="ru">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Alfred Chess</title>
+<style>
+  :root { color-scheme: dark; font-family: system-ui, sans-serif; color: #f5eddf; background: #181c19; }
+  body { margin: 0; }
+  main { width: min(69rem, calc(100% - 2rem)); margin: 2rem auto; }
+  h1 { font: 500 clamp(2rem, 5vw, 3rem) Georgia, serif; margin: 0 0 1rem; }
+  h2 { font-size: 1rem; margin: 0 0 .6rem; }
+  .layout { display: grid; grid-template-columns: minmax(0, 36rem) minmax(0, 1fr); gap: 1.5rem; align-items: start; }
+  #board { display: grid; grid-template-columns: repeat(8, 1fr); border: 3px solid #38473a; }
+  button, input { font: inherit; }
+  button { cursor: pointer; }
+  button:disabled { cursor: default; }
+  .square { border: 0; border-radius: 0; padding: 0; aspect-ratio: 1; position: relative;
+    color: #171c18; background: #e2cfaa; font: clamp(1.3rem, 6vw, 3.3rem) 'Apple Symbols', 'Segoe UI Symbol', serif; }
+  .square.dark { background: #7a967a; }
+  .square[aria-pressed=true] { background: #deb369; }
+  .square.target::after { content: ''; position: absolute; inset: 8%; border: 3px solid #243d2d; border-radius: 15%; pointer-events: none; }
+  .square:focus-visible { outline: 3px solid #161b17; outline-offset: -4px; z-index: 1; }
+  .coordinate { position: absolute; bottom: 2px; left: 4px; font: 600 clamp(.55rem, 1.5vw, .75rem) system-ui; }
+  figure { margin: 0; }
+  aside { display: grid; gap: 1rem; }
+  section { padding: 1rem; border: 1px solid #48584c; border-radius: .7rem; background: #222a24; }
+  #status { min-height: 1.4em; margin: 0 0 .7rem; }
+  #error { color: #ffbd9d; }
+  #history { margin: 0 0 1rem; padding-left: 1.75rem; max-height: 13rem; overflow: auto; }
+  #fen { overflow-wrap: anywhere; color: #d0d9cb; }
+  a { color: #c6e2c5; }
+  form, #actions, #promotion { display: flex; gap: .5rem; flex-wrap: wrap; align-items: center; }
+  form input { width: 5rem; }
+  form button, #actions button, #promotion button { padding: .35rem .65rem; }
+  @media (max-width: 49rem) { .layout { grid-template-columns: minmax(0, 1fr); } main { max-width: 36rem; } }
+  .muted { font-size:.85rem; color:#a9b8a9; line-height:1.5; }
+  .square.last { background:#d9bc65; }
+  #facts p { line-height:1.5; font-size:.9rem; }
+  #board { container-type:inline-size; touch-action:manipulation; }
+  .square { font-size:clamp(1rem,10cqi,3.8rem); min-width:0; }
+  button:not(.square) { min-height:40px; }
+  .prototype-note { color:#a9b8a9; margin:-.6rem 0 1rem;font-size:.86rem; }
+</style>
+<main>
+  <h1>Alfred Chess</h1>
+  <p class="prototype-note">Демонстрация · Esca 0.4.0 + Stockfish 19 Lite · партия хранится в браузере</p>
+  <p id="status" role="status">Загрузка Esca…</p>
+  <div class="layout">
+    <figure>
+      <div id="board" role="group" aria-label="Шахматная доска"></div>
+      <p id="error" role="alert"></p>
+      <div id="promotion" role="group" aria-label="Выбор превращения"></div>
+    </figure>
+    <aside>
+      <section>
+        <h2>Сила Stockfish</h2>
+        <form id="strength">
+          <label for="elo">Skill (0–20)</label>
+          <input id="elo" type="number" min="0" max="20" value="5" required>
+          <button>Применить</button>
+        </form>
+        <p class="muted">Относительная сила движка, не человеческий Elo.</p><p id="actions"></p>
+      </section>
+      <section>
+        <h2>История ходов</h2>
+        <ol id="history"></ol>
+        <button id="export" type="button">Скачать историю JSON</button>
+      </section>
+      <section>
+        <h2>Позиция</h2>
+        <code id="fen"></code>
+      </section>
+      <section><h2>Разбор Esca</h2><p class="muted">Только вычисленные факты, без языковой модели. В режиме партии скрыты.</p><button id="facts-toggle" type="button">Режим разбора</button><div id="facts" hidden></div></section>
+    </aside>
+  </div>
+  <footer class="muted" style="margin-top:1.25rem">
+    Бесплатная экспериментальная версия. Языковая модель пока не подключена.
+    <a href="licenses/stockfish-19-lite/Copying.txt">Stockfish.js — GPLv3</a> ·
+    <a href="https://github.com/nmrugg/stockfish.js/archive/9cb3e5066d48f1a35d792afeda36eff37ae60570.tar.gz">Соответствующие исходники Stockfish.js</a> ·
+    <a href="https://github.com/nmrugg/stockfish.js/blob/9cb3e5066d48f1a35d792afeda36eff37ae60570/build.js">Скрипт сборки</a> ·
+    <a href="https://tests.stockfishchess.org/nns?network_name=nn-61e7af4bb97d.nnue">Lite NNUE</a> ·
+    <a href="licenses/esca-0.4.0/LICENSE">Esca — MIT</a> ·
+    <a href="credits.html">Лицензии и исходники</a>.
+  </footer>
+</main>
+<script type="module" src="app.mjs"></script>
+</html>
