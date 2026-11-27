@@ -3,9 +3,18 @@ const byId=id=>document.getElementById(id), KEY='alfred-chess-demo.v1';
 const glyphs={K:'♔',Q:'♕',R:'♖',B:'♗',N:'♘',P:'♙',k:'♚',q:'♛',r:'♜',b:'♝',n:'♞',p:'♟'};
 const names={k:'король',q:'ферзь',r:'ладья',b:'слон',n:'конь',p:'пешка'};
 let analyze,game,selected,busy=false,training=false,owns=false,engineFault=false;
+let pageActive=true,lockRequest=null,turnGeneration=0,activeWorker=null,failure=null,seenSavedRecord=false;
 const btn=(label,action)=>{const el=document.createElement('button');el.type='button';el.textContent=label;el.onclick=action;return el;};
 function render(){
-  if(!game)return;const {state,position}=game,board=byId('board'),playing=active(game),white=position.fen.split(' ')[1]==='w';
+  byId('export').disabled=!game;byId('facts-toggle').disabled=!game;
+  if(!game){
+    for(const id of ['board','history','actions','promotion','facts'])byId(id).replaceChildren();
+    byId('fen').textContent='';byId('facts').hidden=true;
+    for(const el of byId('strength').elements)el.disabled=true;
+    byId('status').textContent=failure?'Прототип недоступен':'Загрузка Esca…';
+    byId('error').textContent=failure?.message||'';return;
+  }
+  const {state,position}=game,board=byId('board'),playing=active(game),white=position.fen.split(' ')[1]==='w';
   const pieces=position.fen.split(' ')[0].replaceAll('/','').replace(/[1-8]/g,n=>'.'.repeat(+n));
   const legal=owns&&playing&&white&&!busy?options(position):[],origins=new Set(legal.map(m=>m.uci.slice(0,2))),choices=legal.filter(m=>m.uci.startsWith(selected||'--')),last=game.wire.at(-1);
   const focus=board.contains(document.activeElement)?document.activeElement.dataset.square:null;board.replaceChildren();
@@ -28,19 +37,76 @@ function render(){
     for(const line of lines){const el=document.createElement('p');el.textContent=line;facts.append(el);} }
 }
 function select(square,targets){byId('promotion').replaceChildren();if(targets.length===1)return human(targets[0].uci);if(targets.length>1){for(const m of targets)byId('promotion').append(btn(names[m.uci.at(-1)],()=>human(m.uci)));return;}selected=selected===square?null:square;render();}
-function act(action){if(!owns||busy)return false;byId('error').textContent='';try{const next=advance(analyze,game,action);localStorage.setItem(KEY,JSON.stringify(next.state));game=next;engineFault=false;selected=null;byId('promotion').replaceChildren();render();return true;}catch(e){byId('error').textContent=e.message;return false;}}
+function act(action){if(!owns||busy)return false;byId('error').textContent='';try{const next=advance(analyze,game,action);localStorage.setItem(KEY,JSON.stringify(next.state));seenSavedRecord=true;game=next;engineFault=false;selected=null;byId('promotion').replaceChildren();render();return true;}catch(e){byId('error').textContent=e.message;return false;}}
 async function human(uci){if(act({type:'move',actor:'human',uci}))await reply();}
-async function reply(){if(!owns||busy||!active(game)||game.position.fen.split(' ')[1]!=='b')return;
-  const rev=game.state.revision;busy=true;engineFault=false;byId('error').textContent='';render();
-  try{const wire=await engineReply(()=>new Worker('./engine/stockfish-19-lite-single.js'),game.wire,game.state.skill);
-    if(!owns||game.state.revision!==rev)throw Error('Позиция изменилась');const uci=canonicalReply(game.position,wire);busy=false;act({type:'move',actor:'stockfish',uci});
-  }catch(e){engineFault=true;byId('error').textContent=e.message;}finally{busy=false;render();}}
+async function reply(){if(!owns||busy||!game||!active(game)||game.position.fen.split(' ')[1]!=='b')return;
+  const rev=game.state.revision,generation=turnGeneration;let worker;
+  const current=()=>pageActive&&owns&&generation===turnGeneration&&game?.state.revision===rev;
+  busy=true;engineFault=false;byId('error').textContent='';render();
+  try{const wire=await engineReply(()=>{worker=new Worker('./engine/stockfish-19-lite-single.js');activeWorker=worker;return worker;},game.wire,game.state.skill);
+    if(!current())return;const uci=canonicalReply(game.position,wire);busy=false;
+    if(!act({type:'move',actor:'stockfish',uci}))engineFault=true;
+  }catch(e){if(current()){engineFault=true;byId('error').textContent=e.message;}}
+  finally{if(generation===turnGeneration){busy=false;if(activeWorker===worker)activeWorker=null;render();}}}
 byId('strength').onsubmit=e=>{e.preventDefault();act({type:'skill',skill:byId('elo').valueAsNumber});};
 byId('facts-toggle').onclick=()=>{training=!training;render();};
 byId('export').onclick=()=>{if(!game)return;const blob=new Blob([JSON.stringify({state:game.state,fen:game.position.fen,outcome:game.position.outcome},null,2)],{type:'application/json'});const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='alfred-chess-local.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
-async function startup(){const res=await fetch('./engine/esca.wasm.gz');if(!res.ok||!res.body)throw Error('Esca WASM отсутствует');if(typeof DecompressionStream!=='function')throw Error('Нужен современный браузер с распаковкой gzip');const rawWasm=await new Response(res.body.pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();analyze=await loadEsca(rawWasm);
-  if(!navigator.locks)throw Error('Нужен браузер с Web Locks и безопасный origin (HTTPS/localhost)');
-  await navigator.locks.request(KEY,{ifAvailable:true},async lock=>{owns=!!lock;const raw=localStorage.getItem(KEY);game=restore(analyze,raw?JSON.parse(raw):initial());render();if(!owns)return;
-    if(active(game)&&game.position.fen.split(' ')[1]==='b')reply();await new Promise(resolve=>window.addEventListener('pagehide',resolve,{once:true}));owns=false;});
+function invalidateTurn(){
+  turnGeneration++;activeWorker?.terminate();activeWorker=null;busy=false;engineFault=false;selected=null;
+  byId('promotion').replaceChildren();
 }
-startup().catch(e=>{byId('status').textContent='Прототип недоступен';byId('error').textContent=e.message;});
+function releaseOwnership(){
+  owns=false;invalidateTurn();const previous=lockRequest;lockRequest=null;
+  previous?.controller.abort();previous?.release?.();
+}
+function failClosed(error){releaseOwnership();failure=error;game=null;render();}
+function readSavedGame(){
+  const raw=localStorage.getItem(KEY);
+  if(raw===null&&seenSavedRecord)throw Error('Сохранённая партия удалена. Перезагрузите страницу для новой партии.');
+  const restored=restore(analyze,raw===null?initial():JSON.parse(raw));
+  if(raw!==null)seenSavedRecord=true;
+  return restored;
+}
+function refreshObserver(){
+  const fresh=readSavedGame();invalidateTurn();game=fresh;failure=null;byId('error').textContent='';render();
+}
+function resume(){
+  if(!pageActive||!analyze||lockRequest)return;
+  try{refreshObserver();}catch(e){failClosed(e);return;}
+  const request={controller:new AbortController(),release:null};lockRequest=request;
+  // Keep one cancellable request queued: an observing tab takes over only after
+  // the previous owner releases its lock, and always reloads the committed game.
+  navigator.locks.request(KEY,{signal:request.controller.signal},async()=>{
+    if(!pageActive||lockRequest!==request)return;
+    const fresh=readSavedGame();invalidateTurn();game=fresh;failure=null;owns=true;
+    byId('error').textContent='';render();
+    const released=new Promise(resolve=>{request.release=resolve;});
+    if(active(game)&&game.position.fen.split(' ')[1]==='b')reply();
+    await released;
+    if(lockRequest===request){owns=false;invalidateTurn();render();}
+  }).catch(e=>{
+    if(lockRequest===request&&e.name!=='AbortError')failClosed(e);
+  }).finally(()=>{if(lockRequest===request)lockRequest=null;});
+}
+window.addEventListener('pagehide',()=>{pageActive=false;releaseOwnership();render();});
+window.addEventListener('pageshow',()=>{pageActive=true;resume();});
+window.addEventListener('storage',event=>{
+  if(event.storageArea!==localStorage||(event.key!==KEY&&event.key!==null)||!pageActive||!analyze)return;
+  try{
+    if(event.key===null||event.newValue===null)throw Error('Сохранённая партия удалена. Перезагрузите страницу для новой партии.');
+    if(owns){
+      // A prior owner's storage event may arrive after lock handover. Ignore it
+      // when acquisition already loaded that same committed record.
+      if(JSON.stringify(readSavedGame().state)===JSON.stringify(game.state))return;
+      throw Error('Партия изменена вне активной вкладки. Перезагрузите страницу.');
+    }
+    if(lockRequest)refreshObserver();else resume();
+  }catch(e){failClosed(e);}
+});
+async function startup(){
+  if(!navigator.locks)throw Error('Нужен браузер с Web Locks и безопасный origin (HTTPS/localhost)');
+  const res=await fetch('./engine/esca.wasm.gz');if(!res.ok||!res.body)throw Error('Esca WASM отсутствует');if(typeof DecompressionStream!=='function')throw Error('Нужен современный браузер с распаковкой gzip');const rawWasm=await new Response(res.body.pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();analyze=await loadEsca(rawWasm);
+  resume();
+}
+render();startup().catch(failClosed);
+
