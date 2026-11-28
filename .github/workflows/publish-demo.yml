@@ -1,5 +1,6 @@
-# Initial publication only. No build, inference, private data or repository secrets.
-# Do not merge/run without the owner's explicit Pages-only hosted-runner exception.
+# Exact reviewed publication payload. No build, inference, private data or secrets.
+# The initial one-time hosted-runner exception has been consumed.
+# Each new release requires a new explicit owner exception before merging/running.
 name: Publish Alfred Chess demo
 'on':
   push:
@@ -25,26 +26,117 @@ jobs:
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           persist-credentials: false
-      - name: Verify exact public assets and stage without workflow files
+      - name: Verify exact source and stage only public assets
         shell: bash
         run: |
           set -euo pipefail
           python3 - <<'PY'
           import hashlib, json, os, pathlib, shutil, subprocess
-          expected = json.loads(r'''{".nojekyll":"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855","README.md":"44effb85bc7a5d5ee4c33448c0e292a18d6a8195a6a9cbef756a3ab13f2f27be","app.mjs":"9c10c5303c6a666e77c79fb1640978263614b71d6b330183e0b05d06d87ecfdd","chess.mjs":"631f21a8fcd3c11f6df7bc3b91ade2795bcb13f296d8047ba393d8d0a8993d47","credits.html":"22a8d0ff26a32d2bd48cfe94b1bfec4640edb3a11ea15de032415d59026de4b4","engine/esca.wasm.gz":"5358298a211b20859ceb7b287e43a45ddb33fae6d59253652bd2c1c1e5843821","engine/stockfish-19-lite-single.js":"d3344124ab067fb0b90ee77873bb8e9fbf5fc01bc525fe714b0f942581e889e6","engine/stockfish-19-lite-single.wasm":"57ac2d72312aba346760e3f173f687a8c211208e97a87268436f7f0e10bb5387","index.html":"330dbb7d78e5bc2aee6774b6551b8dc679a67def6a085f4510b850d340d3d0b7","licenses/cozy-chess/LICENSE":"e2e583de8c230aec253c6e83f312171f7d76f122caf9477ed2c8f42b7371f446","licenses/esca-0.4.0/LICENSE":"1d9b07ead9c4aa3b803251c25537335d06eaad32a85ea78887dda2663e4a2f11","licenses/itoa-1.0.18/LICENSE-APACHE":"62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a","licenses/itoa-1.0.18/LICENSE-MIT":"23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3","licenses/memchr-2.8.3/COPYING":"01c266bced4a434da0051174d6bee16a4c82cf634e2679b6155d40d75012390f","licenses/memchr-2.8.3/LICENSE-MIT":"0f96a83840e146e43c0ec96a22ec1f392e0680e6c1226e6f3ba87e0740af850f","licenses/memchr-2.8.3/UNLICENSE":"7e12e5df4bae12cb21581ba157ced20e1986a0508dd10d0e8a4ab9a4cf94e85c","licenses/proc-macro2-1.0.107/LICENSE-APACHE":"62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a","licenses/proc-macro2-1.0.107/LICENSE-MIT":"23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3","licenses/quote-1.0.47/LICENSE-APACHE":"62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a","licenses/quote-1.0.47/LICENSE-MIT":"23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3","licenses/rust-1.93.0/COPYRIGHT-library.html":"d93d65853736bde4e8649691233a98848ba709673873aeb39487bc1ca6ee292a","licenses/rust-1.93.0/licenses/Apache-2.0.txt":"074e6e32c86a4c0ef8b3ed25b721ca23aca83df277cd88106ef7177c354615ff","licenses/rust-1.93.0/licenses/BSD-2-Clause.txt":"f32fb3b417a194167cfad068223fc975ba96c5960513a10f66a3c28720aec1df","licenses/rust-1.93.0/licenses/CC-BY-SA-4.0.txt":"23ee78c8bae49cf08ea2f0c84945c66b987ebe4520881fb51b3dad4fb43d07c2","licenses/rust-1.93.0/licenses/GCC-exception-3.1.txt":"a3966c9410ef94a1efbfa9ec04e9c1994026a70623fbf0885ce36737bfba3b54","licenses/rust-1.93.0/licenses/GPL-2.0-only.txt":"54b212ba1f97f6948fa5486239ab505dd820b02e50cbfd296b4062c8609a70af","licenses/rust-1.93.0/licenses/GPL-3.0-or-later.txt":"05315fce6c35f79b8a35454828995fa26336f235895ac64557abc028f4ffcea2","licenses/rust-1.93.0/licenses/ISC.txt":"0ff61769b238634e042ab759dddfd104a8e69d091e3600ae3410e401a6164381","licenses/rust-1.93.0/licenses/LLVM-exception.txt":"e34c58338bd89d43e709e226610d8f32b3e3c47f4ad9a99a8dc1d4ac7842488e","licenses/rust-1.93.0/licenses/MIT.txt":"b85dcd3e453d05982552c52b5fc9e0bdd6d23c6f8e844b984a88af32570b0cc0","licenses/rust-1.93.0/licenses/NCSA.txt":"39cb0234065c92b9e6cee3830cbb52b1aa289aa8fe9ba2e66730fec5cf05c630","licenses/rust-1.93.0/licenses/OFL-1.1.txt":"8eea8287e5876b539670cadb82e99f9a7afddec6f6730811be1daf25d2e9bcfd","licenses/rust-1.93.0/licenses/Unicode-3.0.txt":"f5062c9a188d81dfe66b56db4182dcf9e4b17c0d9b0d311a8e20b3a1b075c443","licenses/serde-1.0.229/LICENSE-APACHE":"62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a","licenses/serde-1.0.229/LICENSE-MIT":"23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3","licenses/serde_core-1.0.229/LICENSE-APACHE":"62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a","licenses/serde_core-1.0.229/LICENSE-MIT":"23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3","licenses/serde_derive-1.0.229/LICENSE-APACHE":"62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a","licenses/serde_derive-1.0.229/LICENSE-MIT":"23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3","licenses/serde_json-1.0.151/LICENSE-APACHE":"62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a","licenses/serde_json-1.0.151/LICENSE-MIT":"23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3","licenses/stockfish-19-lite/Copying.txt":"0b383d5a63da644f628d99c33976ea6487ed89aaa59f0b3257992deac1171e6b","licenses/syn-3.0.4/LICENSE-APACHE":"62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a","licenses/syn-3.0.4/LICENSE-MIT":"23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3","licenses/unicode-ident-1.0.24/LICENSE-APACHE":"62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a","licenses/unicode-ident-1.0.24/LICENSE-MIT":"23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3","licenses/unicode-ident-1.0.24/LICENSE-UNICODE":"f7db81051789b729fea528a63ec4c938fdcb93d9d61d97dc8cc2e9df6d47f2a1","licenses/zmij-1.0.23/LICENSE-MIT":"23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3","source/esca-wrapper/Cargo.lock":"77a02d592dbfb6dee51fdbc3e00d1bdc2b5efcf5d82a40e7df59a2cc635a7b66","source/esca-wrapper/Cargo.toml":"32323be08f0056f2645e2c5a937d381d8d833d710a80a7736b9b45345cfb65d2","source/esca-wrapper/README.md":"f497ce40e90d751dd7515021098f55dda062423507d0ce629c06b559d059b102","source/esca-wrapper/src/lib.rs":"13a7678add29596e4e9fa527b1256fe41ce485e6c04c15f753b3da41d36faf69"}''')
-          root = pathlib.Path.cwd()
+          static = json.loads(r'''{
+            ".nojekyll": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "README.md": "c31ba1eb7525d2c99ef80018fb19bb7df546aa390d9f520e69c7a21ea4b69547",
+            "app.mjs": "8cbb0ac9eb4d23e2ec2c214161a8d4fd5be01ef906bbe049c68be42a99500e7e",
+            "chess.mjs": "631f21a8fcd3c11f6df7bc3b91ade2795bcb13f296d8047ba393d8d0a8993d47",
+            "cm-board.mjs": "b7156971cac123b5ac825533655ddb16cfb8ed75cb1951d02f76494c3c8c9462",
+            "credits.html": "4200adeaf0fbacc0f676725f265d7bf50faaaaee540e2de9845b5ab69428dac9",
+            "engine/esca.wasm.gz": "5358298a211b20859ceb7b287e43a45ddb33fae6d59253652bd2c1c1e5843821",
+            "engine/stockfish-19-lite-single.js": "d3344124ab067fb0b90ee77873bb8e9fbf5fc01bc525fe714b0f942581e889e6",
+            "engine/stockfish-19-lite-single.wasm": "57ac2d72312aba346760e3f173f687a8c211208e97a87268436f7f0e10bb5387",
+            "index.html": "bba8942dc31dc9d2084d5561facf57e450eb7118354885f2f442aabc62fc3ff9",
+            "licenses/cm-chessboard/CC-BY-SA-3.0.txt": "3f941b3b89cf7b8370ceb83cc76d2120d471b58735d8ca60238a751a48d7f72f",
+            "licenses/cozy-chess/LICENSE": "e2e583de8c230aec253c6e83f312171f7d76f122caf9477ed2c8f42b7371f446",
+            "licenses/esca-0.4.0/LICENSE": "1d9b07ead9c4aa3b803251c25537335d06eaad32a85ea78887dda2663e4a2f11",
+            "licenses/itoa-1.0.18/LICENSE-APACHE": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a",
+            "licenses/itoa-1.0.18/LICENSE-MIT": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+            "licenses/memchr-2.8.3/COPYING": "01c266bced4a434da0051174d6bee16a4c82cf634e2679b6155d40d75012390f",
+            "licenses/memchr-2.8.3/LICENSE-MIT": "0f96a83840e146e43c0ec96a22ec1f392e0680e6c1226e6f3ba87e0740af850f",
+            "licenses/memchr-2.8.3/UNLICENSE": "7e12e5df4bae12cb21581ba157ced20e1986a0508dd10d0e8a4ab9a4cf94e85c",
+            "licenses/proc-macro2-1.0.107/LICENSE-APACHE": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a",
+            "licenses/proc-macro2-1.0.107/LICENSE-MIT": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+            "licenses/quote-1.0.47/LICENSE-APACHE": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a",
+            "licenses/quote-1.0.47/LICENSE-MIT": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+            "licenses/rust-1.93.0/COPYRIGHT-library.html": "d93d65853736bde4e8649691233a98848ba709673873aeb39487bc1ca6ee292a",
+            "licenses/rust-1.93.0/licenses/Apache-2.0.txt": "074e6e32c86a4c0ef8b3ed25b721ca23aca83df277cd88106ef7177c354615ff",
+            "licenses/rust-1.93.0/licenses/BSD-2-Clause.txt": "f32fb3b417a194167cfad068223fc975ba96c5960513a10f66a3c28720aec1df",
+            "licenses/rust-1.93.0/licenses/CC-BY-SA-4.0.txt": "23ee78c8bae49cf08ea2f0c84945c66b987ebe4520881fb51b3dad4fb43d07c2",
+            "licenses/rust-1.93.0/licenses/GCC-exception-3.1.txt": "a3966c9410ef94a1efbfa9ec04e9c1994026a70623fbf0885ce36737bfba3b54",
+            "licenses/rust-1.93.0/licenses/GPL-2.0-only.txt": "54b212ba1f97f6948fa5486239ab505dd820b02e50cbfd296b4062c8609a70af",
+            "licenses/rust-1.93.0/licenses/GPL-3.0-or-later.txt": "05315fce6c35f79b8a35454828995fa26336f235895ac64557abc028f4ffcea2",
+            "licenses/rust-1.93.0/licenses/ISC.txt": "0ff61769b238634e042ab759dddfd104a8e69d091e3600ae3410e401a6164381",
+            "licenses/rust-1.93.0/licenses/LLVM-exception.txt": "e34c58338bd89d43e709e226610d8f32b3e3c47f4ad9a99a8dc1d4ac7842488e",
+            "licenses/rust-1.93.0/licenses/MIT.txt": "b85dcd3e453d05982552c52b5fc9e0bdd6d23c6f8e844b984a88af32570b0cc0",
+            "licenses/rust-1.93.0/licenses/NCSA.txt": "39cb0234065c92b9e6cee3830cbb52b1aa289aa8fe9ba2e66730fec5cf05c630",
+            "licenses/rust-1.93.0/licenses/OFL-1.1.txt": "8eea8287e5876b539670cadb82e99f9a7afddec6f6730811be1daf25d2e9bcfd",
+            "licenses/rust-1.93.0/licenses/Unicode-3.0.txt": "f5062c9a188d81dfe66b56db4182dcf9e4b17c0d9b0d311a8e20b3a1b075c443",
+            "licenses/serde-1.0.229/LICENSE-APACHE": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a",
+            "licenses/serde-1.0.229/LICENSE-MIT": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+            "licenses/serde_core-1.0.229/LICENSE-APACHE": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a",
+            "licenses/serde_core-1.0.229/LICENSE-MIT": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+            "licenses/serde_derive-1.0.229/LICENSE-APACHE": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a",
+            "licenses/serde_derive-1.0.229/LICENSE-MIT": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+            "licenses/serde_json-1.0.151/LICENSE-APACHE": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a",
+            "licenses/serde_json-1.0.151/LICENSE-MIT": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+            "licenses/stockfish-19-lite/Copying.txt": "0b383d5a63da644f628d99c33976ea6487ed89aaa59f0b3257992deac1171e6b",
+            "licenses/syn-3.0.4/LICENSE-APACHE": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a",
+            "licenses/syn-3.0.4/LICENSE-MIT": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+            "licenses/unicode-ident-1.0.24/LICENSE-APACHE": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a",
+            "licenses/unicode-ident-1.0.24/LICENSE-MIT": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+            "licenses/unicode-ident-1.0.24/LICENSE-UNICODE": "f7db81051789b729fea528a63ec4c938fdcb93d9d61d97dc8cc2e9df6d47f2a1",
+            "licenses/zmij-1.0.23/LICENSE-MIT": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+            "source/esca-wrapper/Cargo.lock": "77a02d592dbfb6dee51fdbc3e00d1bdc2b5efcf5d82a40e7df59a2cc635a7b66",
+            "source/esca-wrapper/Cargo.toml": "32323be08f0056f2645e2c5a937d381d8d833d710a80a7736b9b45345cfb65d2",
+            "source/esca-wrapper/README.md": "f497ce40e90d751dd7515021098f55dda062423507d0ce629c06b559d059b102",
+            "source/esca-wrapper/src/lib.rs": "13a7678add29596e4e9fa527b1256fe41ce485e6c04c15f753b3da41d36faf69",
+            "styles.css": "bb037041cb7f335bc0795a351061617885fca92b6700407dc3a6fef0e060b31d",
+            "vendor/cm-chessboard/LICENSE": "ccf51777fa25224a3548f958a35e4e8ad06db976bd7e56d39bc4baf91fc2fa8e",
+            "vendor/cm-chessboard/PROVENANCE.json": "7d66c58f5bc13b9a7eec4b4f1042212b738729b3886e794db0d40ac644ab6fa6",
+            "vendor/cm-chessboard/assets/_chessboard-theme.scss": "454173876ff15568f825a2d2dca6b4724fafa20a6570309236ecb8db432e6a35",
+            "vendor/cm-chessboard/assets/chessboard.css": "4e65b608f0f4e475fb0c8c98b4d1cc370d2ab05156448b135a9f026ef03be887",
+            "vendor/cm-chessboard/assets/chessboard.css.map": "892810f899804ec1972f0a44849eab6b8d7f1a7306172462aca1a2a641a3103a",
+            "vendor/cm-chessboard/assets/chessboard.scss": "7393897925a0e972bfc5a8a67534cf0ca7874c3b72076a302878644e0b79214a",
+            "vendor/cm-chessboard/assets/extensions/markers/markers.css": "4b1cdb03bb8a46d2692d6d930aee2907931492d87043eaa118fb8faae8953d79",
+            "vendor/cm-chessboard/assets/extensions/markers/markers.css.map": "f4a4ffe6ce9c28882d861b38281f5b0cde3e1751b1092c30715bf3b1f708bd12",
+            "vendor/cm-chessboard/assets/extensions/markers/markers.scss": "cf94dc7cd8d3bb8990c92c23a4385101329bda67aa5852c8ea5dee30d4926fa4",
+            "vendor/cm-chessboard/assets/extensions/markers/markers.svg": "3b01fbeecc578d61da3d4904ac35fb80a45f29113615fe655fbad86556d4dd46",
+            "vendor/cm-chessboard/assets/extensions/promotion-dialog/promotion-dialog.css": "fb328e9b71d2aa83f016a68a63ddb5bd41c6aae0ebc6df91a124ce429c8d2234",
+            "vendor/cm-chessboard/assets/extensions/promotion-dialog/promotion-dialog.css.map": "1e6983de05d8f01c1339bad862d31935ee6d0499a94ba858ad5484ed5185f145",
+            "vendor/cm-chessboard/assets/extensions/promotion-dialog/promotion-dialog.scss": "f34f7fb7fd8543494e23fdc702c19876bb187c5982aedd600b80b1dadd6e3dfc",
+            "vendor/cm-chessboard/assets/pieces/standard.svg": "b85bba95342a9483420999cedeb1c503e6db16cdd7a0da1f3a228549a13134c5",
+            "vendor/cm-chessboard/src/Chessboard.js": "6582efba87300738ab2ac48286162900c368ed12ce069c2713946dc019f82cd0",
+            "vendor/cm-chessboard/src/extensions/accessibility/Accessibility.js": "772653aa025ffa9b613253f8ad79d5bb5bab7fb2b8535ba2a41112ab6c9fdfee",
+            "vendor/cm-chessboard/src/extensions/accessibility/I18n.js": "1a0a2611f3502887f7944f0bb7529324d3b0980fe440cef7ad934d4d3250bbed",
+            "vendor/cm-chessboard/src/extensions/markers/Markers.js": "6ed60c5a7a8aab25debaab309049f05432539387b5ab1100878eed4d92abc177",
+            "vendor/cm-chessboard/src/extensions/promotion-dialog/PromotionDialog.js": "6e38a91c40249b63a05a4179470afc7008e51349866beb17b598177b79e79813",
+            "vendor/cm-chessboard/src/lib/Svg.js": "bacbf9de8ee6b782e5f237204d848018d484802e9b9e77ad36df5fc6547ab754",
+            "vendor/cm-chessboard/src/lib/Utils.js": "971a1695cfc198e80a9f2dbc7ee188b3e5e82069093c1c218ce8dd8210c25597",
+            "vendor/cm-chessboard/src/model/ChessboardState.js": "b3d7cde7663f6b5432110015bf1bdce5ca4b4ccdd8c7bc2d49eb87fa95a14f1d",
+            "vendor/cm-chessboard/src/model/Extension.js": "2657c0e59148eef29aed16e2672f6cc650ed2abcf6846838cfbb85b4bea01357",
+            "vendor/cm-chessboard/src/model/Position.js": "65d8bfcb879f16c3aadd6a6e5514f90e9f161ea2028cc2d46427e5b08de7677d",
+            "vendor/cm-chessboard/src/view/ChessboardView.js": "cdbbd0f63bd4be43c31c2b5bad118843772a19fe3c907b2e1186caf2665e19bb",
+            "vendor/cm-chessboard/src/view/PositionAnimationsQueue.js": "fddb37f73ef1f8fb5f100dc461308415fdf00787c6ab839c811a8abfc5b1bbe1",
+            "vendor/cm-chessboard/src/view/VisualMoveInput.js": "e57a4c45adfe6a09c04a2f771d36294e7ee0819d3d86a18a326dbeb9785a08fb"
+          }''')
+          repository_only = json.loads(r'''{
+            "docs/COACH_CONNECTION.md": "1f220677a0b840b7c015597d463b8c8fd038ecc57a2cce3ab25c7e0b9a9a2913",
+            "tests/README.md": "2faddb252e8ade6637c6c5cf49c589031d1ef028e3e7d166063d8c3ef139ddb8",
+            "tests/acceptance.py": "6549dbd08d86bcd1a21d6c0d7d8e83806215b1ca095d36cf7d773a44fed56b2d"
+          }''')
+          root = pathlib.Path.cwd().resolve()
           tracked = set(subprocess.check_output(['git','ls-files','-z']).decode().rstrip('\0').split('\0'))
-          assert tracked == set(expected) | {'.github/workflows/publish-demo.yml'}, 'Unexpected repository files'
+          assert not set(static) & set(repository_only), 'Overlapping file categories'
+          assert tracked == set(static) | set(repository_only) | {'.github/workflows/publish-demo.yml'}, 'Unexpected repository files'
+          for name, sha in {**static, **repository_only}.items():
+              src = root / name
+              assert src.is_file() and not src.is_symlink() and src.resolve().is_relative_to(root), name
+              assert hashlib.sha256(src.read_bytes()).hexdigest() == sha, name
           stage = pathlib.Path(os.environ['RUNNER_TEMP']) / 'alfred-chess-demo-static'
           stage.mkdir()
-          for name, sha in expected.items():
-              src = root / name
-              assert src.is_file() and not src.is_symlink() and src.resolve().is_relative_to(root)
-              assert hashlib.sha256(src.read_bytes()).hexdigest() == sha, name
+          for name in static:
               dst = stage / name
               dst.parent.mkdir(parents=True, exist_ok=True)
-              shutil.copyfile(src, dst)
-          print(f'Verified {len(expected)} allowlisted public assets')
+              shutil.copyfile(root / name, dst)
+          assert {str(p.relative_to(stage)) for p in stage.rglob('*') if p.is_file()} == set(static)
+          print(f'Verified {len(static)} public assets and {len(repository_only)} repository-only files')
           PY
       - name: Upload static Pages artifact
         uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b

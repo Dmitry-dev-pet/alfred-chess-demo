@@ -1,0 +1,232 @@
+{
+  "name": "cm-chessboard",
+  "version": "8.15.8",
+  "tag": "v8.15.8",
+  "upstream_commit": "1a9e26a7de5fe2830a2d43a7a8bf25cc7afb60f5",
+  "upstream_repository": "https://github.com/shaack/cm-chessboard",
+  "modifications": "None. Vendored upstream files are byte-for-byte identical. Alfred Chess UI and adapter are separate files.",
+  "code_and_css_license": "MIT; see LICENSE",
+  "pieces": {
+    "file": "assets/pieces/standard.svg",
+    "authors": [
+      "Cburnett",
+      "Rfc1394"
+    ],
+    "upstream_adaptation": "shaack",
+    "license": "CC-BY-SA-3.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/3.0/"
+  },
+  "markers": {
+    "file": "assets/extensions/markers/markers.svg",
+    "author": "shaack",
+    "license": "CC-BY-SA-3.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/3.0/"
+  },
+  "license_text": {
+    "path": "../../licenses/cm-chessboard/CC-BY-SA-3.0.txt",
+    "official_source": "https://api.github.com/repos/creativecommons/cc-legal-tools-data/git/blobs/604209a804632b6e5274005a22293976d07c3099",
+    "sha256": "3f941b3b89cf7b8370ceb83cc76d2120d471b58735d8ca60238a751a48d7f72f"
+  },
+  "files": [
+    {
+      "path": "assets/chessboard.css",
+      "bytes": 8417,
+      "git_blob_sha1": "2ff16ee900b3437f80ea39b23ab3fcc0104abc65",
+      "sha256": "4e65b608f0f4e475fb0c8c98b4d1cc370d2ab05156448b135a9f026ef03be887",
+      "source_url": "https://raw.githubusercontent.com/shaack/cm-chessboard/1a9e26a7de5fe2830a2d43a7a8bf25cc7afb60f5/assets/chessboard.css",
+      "license": "MIT"
+    },
+    {
+      "path": "assets/extensions/markers/markers.css",
+      "bytes": 2010,
+      "git_blob_sha1": "9ecad599d7338fd6802b8323aa89c9fe65e6c48d",
+      "sha256": "4b1cdb03bb8a46d2692d6d930aee2907931492d87043eaa118fb8faae8953d79",
+      "source_url": "https://raw.githubusercontent.com/shaack/cm-chessboard/1a9e26a7de5fe2830a2d43a7a8bf25cc7afb60f5/assets/extensions/markers/markers.css",
+      "license": "MIT"
+    },
+    {
+      "path": "assets/extensions/markers/markers.svg",
+      "bytes": 3341,
+      "git_blob_sha1": "1f2e42362c56da832396f510b86671a205a94a90",
+      "sha256": "3b01fbeecc578d61da3d4904ac35fb80a45f29113615fe655fbad86556d4dd46",
+      "source_url": "https://raw.githubusercontent.com/shaack/cm-chessboard/1a9e26a7de5fe2830a2d43a7a8bf25cc7afb60f5/assets/extensions/markers/markers.svg",
+      "license": "CC-BY-SA-3.0"
+    },
+    {
+      "path": "assets/extensions/promotion-dialog/promotion-dialog.css",
+      "bytes": 967,
+      "git_blob_sha1": "7c9887979e43c15c1339e19a0aa2e38f140e38e0",
+      "sha256": "fb328e9b71d2aa83f016a68a63ddb5bd41c6aae0ebc6df91a124ce429c8d2234",
+      "source_url": "https://raw.githubusercontent.com/shaack/cm-chessboard/1a9e26a7de5fe2830a2d43a7a8bf25cc7afb60f5/assets/extensions/promotion-dialog/promotion-dialog.css",
+      "license": "MIT"
+    },
+    {
+      "path": "assets/pieces/standard.svg",
+      "bytes": 23131,
+      "git_blob_sha1": "b700f3b5a54bf97c315e548c03732067f8f8a01b",
+      "sha256": "b85bba95342a9483420999cedeb1c503e6db16cdd7a0da1f3a228549a13134c5",
+      "source_url": "https://raw.githubusercontent.com/shaack/cm-chessboard/1a9e26a7de5fe2830a2d43a7a8bf25cc7afb60f5/assets/pieces/standard.svg",
+      "license": "CC-BY-SA-3.0"
+    },
+    {
+      "path": "src/Chessboard.js",
+      "bytes": 7760,
+      "git_blob_sha1": "ec7d3ddfa2bf40e095dfb4778a9ef52ca7babc74",
+      "sha256": "6582efba87300738ab2ac48286162900c368ed12ce069c2713946dc019f82cd0",
+      "source_url": "https://raw.githubusercontent.com/shaack/cm-chessboard/1a9e26a7de5fe2830a2d43a7a8bf25cc7afb60f5/src/Chessboard.js",
+      "license": "MIT"
+    },
+    {
+      "path": "src/extensions/accessibility/Accessibility.js",
+      "bytes": 23208,
+      "git_blob_sha1": "a7fa0d775832ee0336d4b1da5612befb401b2617",
+      "sha256": "772653aa025ffa9b613253f8ad79d5bb5bab7fb2b8535ba2a41112ab6c9fdfee",
+      "source_url": "https://raw.githubusercontent.com/shaack/cm-chessboard/1a9e26a7de5fe2830a2d43a7a8bf25cc7afb60f5/src/extensions/accessibility/Accessibility.js",
+      "license": "MIT"
+    },
+    {
+      "path": "src/extensions/accessibility/I18n.js",
+      "bytes": 1128,
+      "git_blob_sha1": "22583ba83aff63848f2bfe67122b2f7235a87236",
+      "sha256": "1a0a2611f3502887f7944f0bb7529324d3b0980fe440cef7ad934d4d3250bbed",
+      "source_url": "https://raw.githubusercontent.com/shaack/cm-chessboard/1a9e26a7de5fe2830a2d43a7a8bf25cc7afb60f5/src/extensions/accessibility/I18n.js",
+      "license": "MIT"
+    },
+    {
+      "path": "src/extensions/markers/Markers.js",
+      "bytes": 8496,
+      "git_blob_sha1": "e858049a1488127e1180177f818e50d6580debb5",
+      "sha256": "6ed60c5a7a8aab25debaab309049f05432539387b5ab1100878eed4d92abc177",
+      "source_url": "https://raw.githubusercontent.com/shaack/cm-chessboard/1a9e26a7de5fe2830a2d43a7a8bf25cc7afb60f5/src/extensions/markers/Markers.js",
+      "license": "MIT"
+    },
+    {
+      "path": "src/extensions/promotion-dialog/PromotionDialog.js",
+      "bytes": 16138,
+      "git_blob_sha1": "5ae632e44660e6985c930a6855853a8499a80df2",
+      "sha256": "6e38a91c40249b63a05a4179470afc7008e51349866beb17b598177b79e79813",
+      "source_url": "https://raw.githubusercontent.com/shaack/cm-chessboard/1a9e26a7de5fe2830a2d43a7a8bf25cc7afb60f5/src/extensions/promotion-dialog/PromotionDialog.js",
+      "license": "MIT"
+    },
+    {
+      "path": "src/lib/Svg.js",
+      "bytes": 1987,
+      "git_blob_sha1": "c93597c580ce8f418906f5409023ad2d3babb5eb",
+      "sha256": "bacbf9de8ee6b782e5f237204d848018d484802e9b9e77ad36df5fc6547ab754",
+      "source_url": "https://raw.githubusercontent.com/shaack/cm-chessboard/1a9e26a7de5fe2830a2d43a7a8bf25cc7afb60f5/src/lib/Svg.js",
+      "license": "MIT"
+    },
+    {
+      "path": "src/lib/Utils.js",
+      "bytes": 1736,
+      "git_blob_sha1": "65cf9b045762fc1387eeda2d4eab13d07d135ac9",
+      "sha256": "971a1695cfc198e80a9f2dbc7ee188b3e5e82069093c1c218ce8dd8210c25597",
+      "source_url": "https://raw.githubusercontent.com/shaack/cm-chessboard/1a9e26a7de5fe2830a2d43a7a8bf25cc7afb60f5/src/lib/Utils.js",
+      "license": "MIT"
+    },
+    {
+      "path": "src/model/ChessboardState.js",
+      "bytes": 1386,
+      "git_blob_sha1": "92864550ec94924360f53c78d72b1fbcd1fcb94b",
+      "sha256": "b3d7cde7663f6b5432110015bf1bdce5ca4b4ccdd8c7bc2d49eb87fa95a14f1d",
+      "source_url": "https://raw.githubusercontent.com/shaack/cm-chessboard/1a9e26a7de5fe2830a2d43a7a8bf25cc7afb60f5/src/model/ChessboardState.js",
+      "license": "MIT"
+    },
+    {
+      "path": "src/model/Extension.js",
+      "bytes": 1968,
+      "git_blob_sha1": "4b4af4d755601ef077f9e921d256efba25ae67f4",
+      "sha256": "2657c0e59148eef29aed16e2672f6cc650ed2abcf6846838cfbb85b4bea01357",
+      "source_url": "https://raw.githubusercontent.com/shaack/cm-chessboard/1a9e26a7de5fe2830a2d43a7a8bf25cc7afb60f5/src/model/Extension.js",
+      "license": "MIT"
+    },
+    {
+      "path": "src/model/Position.js",
+      "bytes": 4769,
+      "git_blob_sha1": "82f128c5d03883127b3addb152a7bb32221367b3",
+      "sha256": "65d8bfcb879f16c3aadd6a6e5514f90e9f161ea2028cc2d46427e5b08de7677d",
+      "source_url": "https://raw.githubusercontent.com/shaack/cm-chessboard/1a9e26a7de5fe2830a2d43a7a8bf25cc7afb60f5/src/model/Position.js",
+      "license": "MIT"
+    },
+    {
+      "path": "src/view/ChessboardView.js",
+      "bytes": 20948,
+      "git_blob_sha1": "815ebe714fb39f76754f59cb2e9e05afd9323a33",
+      "sha256": "cdbbd0f63bd4be43c31c2b5bad118843772a19fe3c907b2e1186caf2665e19bb",
+      "source_url": "https://raw.githubusercontent.com/shaack/cm-chessboard/1a9e26a7de5fe2830a2d43a7a8bf25cc7afb60f5/src/view/ChessboardView.js",
+      "license": "MIT"
+    },
+    {
+      "path": "src/view/PositionAnimationsQueue.js",
+      "bytes": 11142,
+      "git_blob_sha1": "e0e62bf178cf5663a61b6346882a67c77cc6a872",
+      "sha256": "fddb37f73ef1f8fb5f100dc461308415fdf00787c6ab839c811a8abfc5b1bbe1",
+      "source_url": "https://raw.githubusercontent.com/shaack/cm-chessboard/1a9e26a7de5fe2830a2d43a7a8bf25cc7afb60f5/src/view/PositionAnimationsQueue.js",
+      "license": "MIT"
+    },
+    {
+      "path": "src/view/VisualMoveInput.js",
+      "bytes": 24106,
+      "git_blob_sha1": "6b2cd61641577e957402eec72702f6cf3dcf016a",
+      "sha256": "e57a4c45adfe6a09c04a2f771d36294e7ee0819d3d86a18a326dbeb9785a08fb",
+      "source_url": "https://raw.githubusercontent.com/shaack/cm-chessboard/1a9e26a7de5fe2830a2d43a7a8bf25cc7afb60f5/src/view/VisualMoveInput.js",
+      "license": "MIT"
+    },
+    {
+      "path": "LICENSE",
+      "bytes": 1108,
+      "git_blob_sha1": "922cdaf9ff1e88c552e5c6a8c72c0b441aa7ca4a",
+      "sha256": "ccf51777fa25224a3548f958a35e4e8ad06db976bd7e56d39bc4baf91fc2fa8e",
+      "source_url": "https://raw.githubusercontent.com/shaack/cm-chessboard/1a9e26a7de5fe2830a2d43a7a8bf25cc7afb60f5/LICENSE"
+    },
+    {
+      "path": "assets/chessboard.css.map",
+      "bytes": 8865,
+      "git_blob_sha1": "86e64489bc8f647a9dd947289b46312e98954406",
+      "sha256": "892810f899804ec1972f0a44849eab6b8d7f1a7306172462aca1a2a641a3103a",
+      "source_url": "https://raw.githubusercontent.com/shaack/cm-chessboard/1a9e26a7de5fe2830a2d43a7a8bf25cc7afb60f5/assets/chessboard.css.map"
+    },
+    {
+      "path": "assets/chessboard.scss",
+      "bytes": 2156,
+      "git_blob_sha1": "82f7fdcb8cbcb001e4ef1fc0dc88537f524c0826",
+      "sha256": "7393897925a0e972bfc5a8a67534cf0ca7874c3b72076a302878644e0b79214a",
+      "source_url": "https://raw.githubusercontent.com/shaack/cm-chessboard/1a9e26a7de5fe2830a2d43a7a8bf25cc7afb60f5/assets/chessboard.scss"
+    },
+    {
+      "path": "assets/_chessboard-theme.scss",
+      "bytes": 1433,
+      "git_blob_sha1": "021dc7f69c299bd6b1345715a16a0112fafdc7f8",
+      "sha256": "454173876ff15568f825a2d2dca6b4724fafa20a6570309236ecb8db432e6a35",
+      "source_url": "https://raw.githubusercontent.com/shaack/cm-chessboard/1a9e26a7de5fe2830a2d43a7a8bf25cc7afb60f5/assets/_chessboard-theme.scss"
+    },
+    {
+      "path": "assets/extensions/markers/markers.css.map",
+      "bytes": 597,
+      "git_blob_sha1": "0972dbe48f8b502bbe3b53a166f168a1f6ba101a",
+      "sha256": "f4a4ffe6ce9c28882d861b38281f5b0cde3e1751b1092c30715bf3b1f708bd12",
+      "source_url": "https://raw.githubusercontent.com/shaack/cm-chessboard/1a9e26a7de5fe2830a2d43a7a8bf25cc7afb60f5/assets/extensions/markers/markers.css.map"
+    },
+    {
+      "path": "assets/extensions/markers/markers.scss",
+      "bytes": 2392,
+      "git_blob_sha1": "151bb6f05486aeb6cb880754cf426ebd6219657d",
+      "sha256": "cf94dc7cd8d3bb8990c92c23a4385101329bda67aa5852c8ea5dee30d4926fa4",
+      "source_url": "https://raw.githubusercontent.com/shaack/cm-chessboard/1a9e26a7de5fe2830a2d43a7a8bf25cc7afb60f5/assets/extensions/markers/markers.scss"
+    },
+    {
+      "path": "assets/extensions/promotion-dialog/promotion-dialog.css.map",
+      "bytes": 248,
+      "git_blob_sha1": "14fbcf73a6dac6aa9737b10464bad820e7cb5b1a",
+      "sha256": "1e6983de05d8f01c1339bad862d31935ee6d0499a94ba858ad5484ed5185f145",
+      "source_url": "https://raw.githubusercontent.com/shaack/cm-chessboard/1a9e26a7de5fe2830a2d43a7a8bf25cc7afb60f5/assets/extensions/promotion-dialog/promotion-dialog.css.map"
+    },
+    {
+      "path": "assets/extensions/promotion-dialog/promotion-dialog.scss",
+      "bytes": 704,
+      "git_blob_sha1": "c001697c346cbc8a81cb42e139251bca3cd3d9b8",
+      "sha256": "f34f7fb7fd8543494e23fdc702c19876bb187c5982aedd600b80b1dadd6e3dfc",
+      "source_url": "https://raw.githubusercontent.com/shaack/cm-chessboard/1a9e26a7de5fe2830a2d43a7a8bf25cc7afb60f5/assets/extensions/promotion-dialog/promotion-dialog.scss"
+    }
+  ]
+}
