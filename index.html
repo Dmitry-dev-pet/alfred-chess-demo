@@ -1,88 +1,116 @@
 <!doctype html>
 <html lang="ru">
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Alfred Chess</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2212%22%20fill%3D%22%23181c19%22%2F%3E%3Cpath%20fill%3D%22%23f5eddf%22%20d%3D%22M16%2014h8v8h4v-8h8v8h4v-8h8v18l-6%206v10h6v6H16v-6h6V38l-6-6z%22%2F%3E%3C%2Fsvg%3E">
-<style>
-  :root { color-scheme: dark; font-family: system-ui, sans-serif; color: #f5eddf; background: #181c19; }
-  body { margin: 0; }
-  main { width: min(69rem, calc(100% - 2rem)); margin: 2rem auto; }
-  h1 { font: 500 clamp(2rem, 5vw, 3rem) Georgia, serif; margin: 0 0 1rem; }
-  h2 { font-size: 1rem; margin: 0 0 .6rem; }
-  .layout { display: grid; grid-template-columns: minmax(0, 36rem) minmax(0, 1fr); gap: 1.5rem; align-items: start; }
-  #board { display: grid; grid-template-columns: repeat(8, 1fr); border: 3px solid #38473a; }
-  button, input { font: inherit; }
-  button { cursor: pointer; }
-  button:disabled { cursor: default; }
-  .square { border: 0; border-radius: 0; padding: 0; aspect-ratio: 1; position: relative;
-    color: #171c18; background: #e2cfaa; font: clamp(1.3rem, 6vw, 3.3rem) 'Apple Symbols', 'Segoe UI Symbol', serif; }
-  .square.dark { background: #7a967a; }
-  .square[aria-pressed=true] { background: #deb369; }
-  .square.target::after { content: ''; position: absolute; inset: 8%; border: 3px solid #243d2d; border-radius: 15%; pointer-events: none; }
-  .square:focus-visible { outline: 3px solid #161b17; outline-offset: -4px; z-index: 1; }
-  .coordinate { position: absolute; bottom: 2px; left: 4px; font: 600 clamp(.55rem, 1.5vw, .75rem) system-ui; }
-  figure { margin: 0; }
-  aside { display: grid; gap: 1rem; }
-  section { padding: 1rem; border: 1px solid #48584c; border-radius: .7rem; background: #222a24; }
-  #status { min-height: 1.4em; margin: 0 0 .7rem; }
-  #error { color: #ffbd9d; }
-  #history { margin: 0 0 1rem; padding-left: 1.75rem; max-height: 13rem; overflow: auto; }
-  #fen { overflow-wrap: anywhere; color: #d0d9cb; }
-  a { color: #c6e2c5; }
-  form, #actions, #promotion { display: flex; gap: .5rem; flex-wrap: wrap; align-items: center; }
-  form input { width: 5rem; }
-  form button, #actions button, #promotion button { padding: .35rem .65rem; }
-  @media (max-width: 49rem) { .layout { grid-template-columns: minmax(0, 1fr); } main { max-width: 36rem; } }
-  .muted { font-size:.85rem; color:#a9b8a9; line-height:1.5; }
-  .square.last { background:#d9bc65; }
-  #facts p { line-height:1.5; font-size:.9rem; }
-  #board { container-type:inline-size; touch-action:manipulation; }
-  .square { font-size:clamp(1rem,10cqi,3.8rem); min-width:0; }
-  button:not(.square) { min-height:40px; }
-  .prototype-note { color:#a9b8a9; margin:-.6rem 0 1rem;font-size:.86rem; }
-</style>
-<main>
-  <h1>Alfred Chess</h1>
-  <p class="prototype-note">Демонстрация · Esca 0.4.0 + Stockfish 19 Lite · партия хранится в браузере</p>
-  <p id="status" role="status">Загрузка Esca…</p>
-  <div class="layout">
-    <figure>
-      <div id="board" role="group" aria-label="Шахматная доска"></div>
-      <p id="error" role="alert"></p>
-      <div id="promotion" role="group" aria-label="Выбор превращения"></div>
-    </figure>
-    <aside>
-      <section>
-        <h2>Сила Stockfish</h2>
-        <form id="strength">
-          <label for="elo">Skill (0–20)</label>
-          <input id="elo" type="number" min="0" max="20" value="5" required>
-          <button>Применить</button>
-        </form>
-        <p class="muted">Относительная сила движка, не человеческий Elo.</p><p id="actions"></p>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#17221d">
+  <title>Alfred Chess — ваша партия</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2212%22%20fill%3D%22%23181c19%22%2F%3E%3Cpath%20fill%3D%22%23f5eddf%22%20d%3D%22M16%2014h8v8h4v-8h8v8h4v-8h8v18l-6%206v10h6v6H16v-6h6V38l-6-6z%22%2F%3E%3C%2Fsvg%3E">
+  <link rel="stylesheet" href="vendor/cm-chessboard/assets/chessboard.css">
+  <link rel="stylesheet" href="vendor/cm-chessboard/assets/extensions/markers/markers.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#move-form">Перейти к вводу хода</a>
+  <main class="workspace">
+    <header class="site-header">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 64 64" focusable="false"><path d="M16 14h8v8h4v-8h8v8h4v-8h8v18l-6 6v10h6v6H16v-6h6V38l-6-6z"/></svg></span>
+        <div><h1>Alfred <span>Chess</span></h1><p>Хорошая партия начинается с одного хода.</p></div>
+      </div>
+      <span class="save-label"><span aria-hidden="true"></span>Сохранение на устройстве</span>
+    </header>
+
+    <div class="workspace-grid">
+      <section class="board-panel" aria-labelledby="board-title">
+        <h2 id="board-title" class="sr-only">Шахматная доска</h2>
+        <div class="player-row" id="player-top">
+          <span class="player-avatar" id="player-top-avatar" aria-hidden="true">S</span>
+          <div class="player-info"><strong id="player-top-name">Stockfish</strong><span id="player-top-detail">Чёрные · уровень 5</span></div>
+          <span class="player-badge" id="player-top-badge">Чёрные</span>
+        </div>
+        <div class="board-shell">
+          <div id="board" role="img" aria-label="Шахматная доска, белые снизу" aria-describedby="board-instructions board-position" tabindex="-1"></div>
+          <div id="board-mask" class="board-mask"><span>Подготавливаем доску…</span></div>
+        </div>
+        <div class="player-row" id="player-bottom">
+          <span class="player-avatar player-avatar--you" id="player-bottom-avatar" aria-hidden="true">Я</span>
+          <div class="player-info"><strong id="player-bottom-name">Вы</strong><span id="player-bottom-detail">Белые</span></div>
+          <span class="player-badge" id="player-bottom-badge">Ваш ход</span>
+        </div>
+        <div class="board-toolbar">
+          <p id="board-hint">Нажмите на фигуру и клетку или перетащите фигуру.</p>
+          <button id="flip-board" class="icon-button" type="button" aria-label="Перевернуть доску" title="Перевернуть доску">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 3 3 7l4 4M3 7h12a5 5 0 0 1 5 5M17 21l4-4-4-4m4 4H9a5 5 0 0 1-5-5"/></svg>
+          </button>
+        </div>
+        <p id="board-instructions" class="sr-only">Для хода с клавиатуры раскройте форму под доской. Выберите исходную клетку и клетку назначения.</p>
+        <p id="board-position" class="sr-only"></p>
+        <details id="keyboard-move" class="keyboard-details">
+          <summary>Ход с клавиатуры</summary>
+          <form id="move-form" class="coordinate-form">
+            <label for="move-from">Откуда<select id="move-from" required disabled></select></label>
+            <label for="move-to">Куда<select id="move-to" required disabled></select></label>
+            <button id="move-submit" class="button button--primary" type="submit" disabled>Сделать ход</button>
+          </form>
+          <p class="fine-print">В списках только допустимые ходы. При превращении пешки появится выбор фигуры.</p>
+        </details>
       </section>
-      <section>
-        <h2>История ходов</h2>
-        <ol id="history"></ol>
-        <button id="export" type="button">Скачать историю JSON</button>
-      </section>
-      <section>
-        <h2>Позиция</h2>
-        <code id="fen"></code>
-      </section>
-      <section><h2>Разбор Esca</h2><p class="muted">Только вычисленные факты, без языковой модели. В режиме партии скрыты.</p><button id="facts-toggle" type="button">Режим разбора</button><div id="facts" hidden></div></section>
-    </aside>
-  </div>
-  <footer class="muted" style="margin-top:1.25rem">
-    Бесплатная экспериментальная версия. Языковая модель пока не подключена.
-    <a href="licenses/stockfish-19-lite/Copying.txt">Stockfish.js — GPLv3</a> ·
-    <a href="https://github.com/nmrugg/stockfish.js/archive/9cb3e5066d48f1a35d792afeda36eff37ae60570.tar.gz">Соответствующие исходники Stockfish.js</a> ·
-    <a href="https://github.com/nmrugg/stockfish.js/blob/9cb3e5066d48f1a35d792afeda36eff37ae60570/build.js">Скрипт сборки</a> ·
-    <a href="https://tests.stockfishchess.org/nns?network_name=nn-61e7af4bb97d.nnue">Lite NNUE</a> ·
-    <a href="licenses/esca-0.4.0/LICENSE">Esca — MIT</a> ·
-    <a href="credits.html">Лицензии и исходники</a>.
-  </footer>
-</main>
-<script type="module" src="app.mjs"></script>
+
+      <aside class="side-panel" aria-label="Партия и разбор">
+        <section class="session-panel">
+          <div class="mode-tabs" role="tablist" aria-label="Режим">
+            <button id="game-mode" type="button" role="tab" aria-selected="true" aria-controls="game-panel" tabindex="0">Партия</button>
+            <button id="facts-toggle" type="button" role="tab" aria-selected="false" aria-controls="facts" tabindex="-1">Разбор</button>
+          </div>
+          <div class="status-line" id="status-line">
+            <span class="status-indicator" aria-hidden="true"></span>
+            <div><h2 id="status" role="status" aria-live="polite" aria-atomic="true">Подготавливаем партию…</h2><p id="status-detail">Вы играете белыми.</p></div>
+          </div>
+          <p id="error" class="error-message" role="alert" aria-live="assertive"></p>
+
+          <div id="game-panel" role="tabpanel" aria-labelledby="game-mode">
+            <section class="level-section" aria-labelledby="level-heading">
+              <form id="strength">
+                <div class="section-heading"><label id="level-heading" for="elo">Уровень соперника</label><output id="level-preview" for="elo">5</output></div>
+                <input id="elo" type="range" min="0" max="20" step="1" value="5" aria-label="Уровень соперника, от 0 до 20" disabled>
+                <div class="range-labels"><span>0 · мягче</span><span>20 · сильнее</span></div>
+                <button id="apply-strength" class="button button--quiet" type="submit" disabled>Применить</button>
+              </form>
+            </section>
+            <div id="actions" class="game-actions"></div>
+            <section class="history-section" aria-labelledby="history-title">
+              <div class="section-heading"><h2 id="history-title">Ходы</h2><span id="move-count" class="count-label">0</span></div>
+              <div class="history-columns" aria-hidden="true"><span>Белые</span><span>Чёрные</span></div>
+              <ol id="history" class="move-list" aria-label="История ходов"></ol>
+              <p id="history-empty" class="empty-history">Сделайте первый ход.</p>
+            </section>
+          </div>
+
+          <section id="facts" role="tabpanel" aria-labelledby="facts-toggle" hidden></section>
+        </section>
+
+        <details class="position-details">
+          <summary>Позиция и сохранение</summary>
+          <div class="position-content">
+            <button id="export" class="button button--quiet" type="button" disabled>Скачать партию JSON</button>
+            <span class="fine-print" id="fen-label">Позиция в формате FEN</span>
+            <code id="fen" aria-labelledby="fen-label"></code>
+            <p class="fine-print">Партия хранится в этом браузере. Файл сохранит историю отдельно.</p>
+          </div>
+        </details>
+      </aside>
+    </div>
+
+    <footer class="site-footer"><span>Alfred Chess</span><a href="credits.html">Лицензии и исходники</a></footer>
+  </main>
+
+  <dialog id="promotion" class="promotion-dialog" aria-labelledby="promotion-title" aria-describedby="promotion-description">
+    <div class="dialog-heading"><span class="eyebrow">Ваш ход</span><h2 id="promotion-title">Превращение пешки</h2></div>
+    <p id="promotion-description">Выберите фигуру для пешки на <strong id="promotion-square"></strong>.</p>
+    <div id="promotion-options" class="promotion-options"></div>
+    <button id="promotion-cancel" type="button" class="button button--quiet">Отмена</button>
+  </dialog>
+  <script type="module" src="app.mjs"></script>
+</body>
 </html>
