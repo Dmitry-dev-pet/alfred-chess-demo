@@ -16,7 +16,7 @@ The publication workflow verifies an exact set of files and SHA-256 hashes, then
 
 ## Optional conversational coach
 
-[Connection design](docs/COACH_CONNECTION.md) describes a proposed authenticated service and official model access options. It is a design document, not a running GPT connection. The current game makes no language-model requests and needs no model credentials.
+[Connection design](https://github.com/Dmitry-dev-pet/alfred-chess-demo/blob/main/docs/COACH_CONNECTION.md) describes a proposed authenticated service and official model access options. It is a design document, not a running GPT connection. The current game makes no language-model requests and needs no model credentials.
 
 The bundled Stockfish.js assets are unmodified upstream GPLv3 binaries. Corresponding source: [exact upstream source archive](https://github.com/nmrugg/stockfish.js/archive/9cb3e5066d48f1a35d792afeda36eff37ae60570.tar.gz); [build instructions and script](https://github.com/nmrugg/stockfish.js/tree/9cb3e5066d48f1a35d792afeda36eff37ae60570); [Lite network](https://tests.stockfishchess.org/nns?network_name=nn-61e7af4bb97d.nnue). These public source locations accompany the binaries; [GPLv3 text](licenses/stockfish-19-lite/Copying.txt).
 

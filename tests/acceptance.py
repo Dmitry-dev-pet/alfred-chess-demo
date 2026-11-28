@@ -33,6 +33,15 @@ PROMOTION_MOVES = ["a2a4", "h7h5", "a4a5", "h5h4",
 PROMOTION_FEN = "rnbqkbnr/pPppppp1/8/8/8/8/1PPPPPpP/RNBQKBNR w KQkq - 0 5"
 PROMOTION_STATE = {"schema": 1, "revision": 8, "moves": PROMOTION_MOVES,
                    "skill": 5, "finish": None}
+HISTORY_FIXTURES = (
+    {"name": "actual_castling_history_label", "moves": [
+        "e2e4", "e7e5", "g1f3", "b8c6", "f1c4", "g8f6", "e1h1", "f8c5"],
+     "ply": 7, "label": "O–O", "pieces": {"g1": "K", "f1": "R"}},
+    {"name": "ordinary_rook_history_label", "moves": [
+        "e2e4", "a7a6", "g1f3", "a6a5", "f1c4", "b7b6",
+        "e1e2", "b6b5", "h1e1", "c7c6", "e1h1", "c6c5"],
+     "ply": 11, "label": "e1–h1", "pieces": {"e2": "K", "h1": "R"}},
+)
 REQUIRED_ASSET_SUFFIXES = (
     "/app.mjs", "/chess.mjs", "/engine/esca.wasm.gz",
     "/engine/stockfish-19-lite-single.js",
@@ -55,6 +64,17 @@ def require(condition, message):
 def write_json(path, value):
     path.write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n",
                     encoding="utf-8")
+
+
+def normalize_base_url(value):
+    parsed = urlparse(value)
+    if (parsed.scheme not in ("http", "https") or not parsed.hostname or
+            not parsed.path.endswith("/") or parsed.query or parsed.fragment or
+            parsed.username or parsed.password):
+        raise ValueError("--base-url must be an HTTP(S) URL with a trailing slash and no credentials/query/fragment")
+    if parsed.port == {"http": 80, "https": 443}[parsed.scheme]:
+        return parsed._replace(netloc=parsed.netloc.rsplit(":", 1)[0]).geturl()
+    return value
 
 
 def piece_at(fen, square):
@@ -304,6 +324,14 @@ async def gameplay(browser, evidence):
     evidence.report["user_agent"] = await page.evaluate("navigator.userAgent")
     evidence.completed("real_cm_chessboard_initial_position")
 
+    initial = await snapshot(page)
+    await click_square(page, "e2")
+    await click_square(page, "g1")
+    await page.wait_for_function("document.getElementById('move-from').value === 'g1'")
+    await wait_ready(page, 0)
+    await assert_same(page, initial, "Selecting another own piece changed the game")
+    evidence.completed("own_piece_reselection_is_not_an_illegal_move")
+
     await click_move(page, "e2", "e4")
     await wait_ready(page, 2)
     first = await snapshot(page)
@@ -382,16 +410,21 @@ async def gameplay(browser, evidence):
     evidence.verify_assets("gameplay")
 
 
-async def promotion(browser, evidence):
-    context = await evidence.context(browser, "promotion")
+async def seeded_context(browser, evidence, label, state):
+    context = await evidence.context(browser, label)
     origin = "{0.scheme}://{0.netloc}".format(urlparse(evidence.args.base_url))
     seed = """(() => {
         const origin = %s, key = %s, state = %s;
         if (location.origin === origin && localStorage.getItem(key) === null) {
             localStorage.setItem(key, JSON.stringify(state));
         }
-    })();""" % (json.dumps(origin), json.dumps(STORAGE_KEY), json.dumps(PROMOTION_STATE))
+    })();""" % (json.dumps(origin), json.dumps(STORAGE_KEY), json.dumps(state))
     await context.add_init_script(script=seed)
+    return context
+
+
+async def promotion(browser, evidence):
+    context = await seeded_context(browser, evidence, "promotion", PROMOTION_STATE)
     page = await context.new_page()
     evidence.current_page = page
     await page.goto(evidence.args.base_url, wait_until="domcontentloaded")
@@ -435,9 +468,36 @@ async def promotion(browser, evidence):
     evidence.completed("knight_underpromotion_and_real_black_reply", saved=promoted)
 
 
+async def history_labels(browser, evidence):
+    for fixture in HISTORY_FIXTURES:
+        state = {"schema": 1, "revision": len(fixture["moves"]),
+                 "moves": fixture["moves"], "skill": 5, "finish": None}
+        context = await seeded_context(browser, evidence, fixture["name"], state)
+        page = await context.new_page()
+        evidence.current_page = page
+        await page.goto(evidence.args.base_url, wait_until="domcontentloaded")
+        await wait_ready(page, len(fixture["moves"]))
+        await wait_sprites_and_network(page)
+        await assert_board_dom(page)
+        restored = await snapshot(page)
+        require(restored["saved"] == state, "Esca did not restore the history fixture")
+        for square, piece in fixture["pieces"].items():
+            require(piece_at(restored["fen"], square) == piece,
+                    "History fixture has an unexpected piece on " + square)
+        row = page.locator('#history li[data-ply="%s"]' % fixture["ply"])
+        require(await row.locator("span").last.text_content() == fixture["label"],
+                "Visible history misclassified castling or an ordinary rook move")
+        accessible = "%d. Белые, %s" % ((fixture["ply"] + 1) // 2, fixture["label"])
+        require(await row.get_attribute("aria-label") == accessible,
+                "Accessible history disagrees with visible move classification")
+        evidence.completed(fixture["name"], saved=restored,
+                           ply=fixture["ply"], label=fixture["label"])
+
+
 async def suite(browser, evidence):
     await gameplay(browser, evidence)
     await promotion(browser, evidence)
+    await history_labels(browser, evidence)
 
 
 async def run(args):
@@ -506,11 +566,10 @@ def main():
     parser.add_argument("--evidence-dir", required=True, type=Path,
                         help="Fresh directory for JSON evidence and viewport screenshots")
     args = parser.parse_args()
-    parsed = urlparse(args.base_url)
-    if (parsed.scheme not in ("http", "https") or not parsed.netloc or
-            not parsed.path.endswith("/") or parsed.query or parsed.fragment or
-            parsed.username or parsed.password):
-        parser.error("--base-url must be an HTTP(S) URL with a trailing slash and no credentials/query/fragment")
+    try:
+        args.base_url = normalize_base_url(args.base_url)
+    except ValueError as error:
+        parser.error(str(error))
     args.browser = args.browser.expanduser().resolve()
     if not args.browser.is_file() or not os.access(str(args.browser), os.X_OK):
         parser.error("--browser is not an existing executable; no browser will be installed or substituted")

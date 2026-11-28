@@ -34,10 +34,10 @@ jobs:
           import hashlib, json, os, pathlib, shutil, subprocess
           static = json.loads(r'''{
             ".nojekyll": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-            "README.md": "bf042629a0e07ee76be0c8e56ae93f16b1f436eb0200a79050b4c9d8f3502047",
-            "app.mjs": "d8a11b5f9761e5133d3f39d982639e591933f4715e400131e0287d71680be515",
+            "README.md": "c31ba1eb7525d2c99ef80018fb19bb7df546aa390d9f520e69c7a21ea4b69547",
+            "app.mjs": "8cbb0ac9eb4d23e2ec2c214161a8d4fd5be01ef906bbe049c68be42a99500e7e",
             "chess.mjs": "631f21a8fcd3c11f6df7bc3b91ade2795bcb13f296d8047ba393d8d0a8993d47",
-            "cm-board.mjs": "1c3ccf8c62adbde4de955d60f47e63460296d95ebdacdcf2d89bb0b701adca5e",
+            "cm-board.mjs": "b7156971cac123b5ac825533655ddb16cfb8ed75cb1951d02f76494c3c8c9462",
             "credits.html": "4200adeaf0fbacc0f676725f265d7bf50faaaaee540e2de9845b5ab69428dac9",
             "engine/esca.wasm.gz": "5358298a211b20859ceb7b287e43a45ddb33fae6d59253652bd2c1c1e5843821",
             "engine/stockfish-19-lite-single.js": "d3344124ab067fb0b90ee77873bb8e9fbf5fc01bc525fe714b0f942581e889e6",
@@ -118,8 +118,8 @@ jobs:
           }''')
           repository_only = json.loads(r'''{
             "docs/COACH_CONNECTION.md": "1f220677a0b840b7c015597d463b8c8fd038ecc57a2cce3ab25c7e0b9a9a2913",
-            "tests/README.md": "7c01483af168a31e007187ebe0d7973af1b6c1ebf1d32a5a35830aea17eca1e3",
-            "tests/acceptance.py": "2d1cd7591760ca95080d1de9b3f39e99bc3e5d8d057a22baba5f6deeb2e0e6d0"
+            "tests/README.md": "2faddb252e8ade6637c6c5cf49c589031d1ef028e3e7d166063d8c3ef139ddb8",
+            "tests/acceptance.py": "6549dbd08d86bcd1a21d6c0d7d8e83806215b1ca095d36cf7d773a44fed56b2d"
           }''')
           root = pathlib.Path.cwd().resolve()
           tracked = set(subprocess.check_output(['git','ls-files','-z']).decode().rstrip('\0').split('\0'))

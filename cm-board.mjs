@@ -117,6 +117,16 @@ export class ChessSurface {
     }
   }
 
+  isOwnPieceReselection(square) {
+    // The pinned view validates a same-color click before selecting that piece.
+    // A completed click/drag is already in moveDone and must keep its feedback.
+    if (this.board.view.visualMoveInput.moveInputState !== 'clickTo') return false;
+    const [placement, side] = this.snapshot.fen.split(' ');
+    const rank = placement.split('/')[8 - Number(square[1])];
+    const piece = rank.replace(/[1-8]/g, n => '.'.repeat(Number(n)))['abcdefgh'.indexOf(square[0])];
+    return side === 'w' ? /^[KQRBNP]$/.test(piece) : side === 'b' && /^[kqrbnp]$/.test(piece);
+  }
+
   handleInput(event) {
     if (event.type === INPUT_EVENT_TYPE.moveInputStarted) {
       if (!this.snapshot.enabled || this.syncing || this.intentPending ||
@@ -140,7 +150,7 @@ export class ChessSurface {
           if (token === this.snapshot.token && this.snapshot.enabled) this.callbacks.onIntent(from, to, token);
           this.updateInput();
         });
-      } else if (available) {
+      } else if (available && !this.isOwnPieceReselection(to)) {
         this.callbacks.onInvalid?.();
       }
       return false;

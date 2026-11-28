@@ -23,9 +23,9 @@ function piecesAt(fen){
   });
   return result;
 }
-function moveLabel(move){
-  if(move==='e1h1'||move==='e8h8')return 'O–O';
-  if(move==='e1a1'||move==='e8a8')return 'O–O–O';
+function moveLabel(move,wire=move){
+  if((move==='e1h1'&&wire==='e1g1')||(move==='e8h8'&&wire==='e8g8'))return 'O–O';
+  if((move==='e1a1'&&wire==='e1c1')||(move==='e8a8'&&wire==='e8c8'))return 'O–O–O';
   return move.slice(0,2)+'–'+move.slice(2,4)+(move.length===5?'='+({q:'Ф',r:'Л',b:'С',n:'К'}[move.at(-1)]):'');
 }
 function setStatus(){
@@ -60,11 +60,12 @@ function renderHistory(){
   if(signature===renderedHistory)return;
   renderedHistory=signature;const list=byId('history');list.replaceChildren();
   moves.forEach((uci,index)=>{
+    const label=moveLabel(uci,game.wire[index]);
     const item=document.createElement('li');item.className='move-item'+(index===moves.length-1?' is-last':'');
     item.dataset.uci=uci;item.dataset.ply=String(index+1);
-    item.setAttribute('aria-label',`${Math.floor(index/2)+1}. ${index%2?'Чёрные':'Белые'}, ${moveLabel(game.wire[index])}`);
+    item.setAttribute('aria-label',`${Math.floor(index/2)+1}. ${index%2?'Чёрные':'Белые'}, ${label}`);
     const number=document.createElement('span');number.className='move-number';number.setAttribute('aria-hidden','true');number.textContent=index%2?'…':`${Math.floor(index/2)+1}.`;
-    const move=document.createElement('span');move.textContent=moveLabel(uci);
+    const move=document.createElement('span');move.textContent=label;
     item.append(number,move);list.append(item);
   });
   list.scrollTop=list.scrollHeight;

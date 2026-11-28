@@ -18,7 +18,8 @@ static-file allowlist.
 The caller must first make the exact candidate available at an existing project
 URL. For a local server, preserve the real Pages subpath, for example
 `http://127.0.0.1:8765/alfred-chess-demo/`. The live HTTPS project URL is also
-supported. The trailing slash is required.
+supported. The trailing slash is required. Explicit default ports (`:443` for
+HTTPS and `:80` for HTTP) are normalized once before origin and request checks.
 
 Example after the browser run has been authorized:
 
@@ -50,7 +51,9 @@ piece/marker assets, actual Esca WASM, and actual Stockfish JS/WASM. It verifies
 one main element, heading, board, and cm-chessboard SVG; 64 squares; the twelve
 sprite definitions; and rendered piece count against the displayed FEN.
 
-It plays `e2e4` by clicking and `g1f3` by a real mouse drag, waiting for a real
+It first selects e2 and then g1, checking that changing the selected own piece
+does not show an illegal-move error or change the game. It then plays `e2e4`
+by clicking and `g1f3` by a real mouse drag, waiting for a real
 Black reply after each. It checks reload persistence, flips the actual board in
 both directions without changing the game, rejects the illegal knight move `f3f5`,
 opens an observer tab and attempts a forbidden move, then closes the owner.
@@ -99,6 +102,16 @@ The test opens the promotion dialog, checks that FEN/history/persisted state sta
 unchanged while waiting, cancels without committing, opens it again, selects
 `Конь`, and requires `b7a8n` plus a real Black reply. The knight must remain on a8.
 
+## History-label regressions
+
+Two additional fresh contexts restore valid move histories through Esca. One
+contains actual white kingside castling, whose canonical `e1h1` maps to engine
+move `e1g1`. The other moves the king to e2, then moves the h1 rook to e1 and
+back to h1; that ordinary `e1h1` keeps the same engine coordinates. The visible
+history and accessible label must both show `O–O` for the castle and `e1–h1`
+for the ordinary rook move. The fixtures do not inject a position or invoke
+private application functions.
+
 ## Diagnostics and limits
 
 All console errors and warnings, page errors, failed requests, and HTTP responses
@@ -110,5 +123,5 @@ PASS is emitted only after all assertions and evidence writes succeed.
 The test observes normal DOM, pointer/keyboard-form input, public FEN, displayed
 history, and the existing persisted game format. It adds no product test API.
 It does not establish physical tablet behavior, native BFCache restoration,
-private MCP behavior, deployment identity, or a complete 51-file live hash audit.
+private MCP behavior, deployment identity, or a complete live asset hash audit.
 Those remain separate checks.
