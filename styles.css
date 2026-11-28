@@ -76,7 +76,7 @@ summary::-webkit-details-marker { display: none; }
 summary::before { content: '+'; font-size: 18px; color: var(--muted); }
 details[open] > summary::before { content: '−'; }
 .coordinate-form { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto; gap: 10px; align-items: end; margin-bottom: 9px; }
-.coordinate-form label { display: flex; flex-direction: column; gap: 7px; color: var(--ink); font-size: 12px; }
+.coordinate-field { display: flex; flex-direction: column; gap: 7px; min-width: 0; color: var(--ink); font-size: 12px; }
 select { display: block; width: 100%; min-height: 44px; border: 1px solid #53604e; border-radius: 8px; background: #213027; color: var(--ink); padding: 8px 10px; }
 .side-panel { padding-top: 0; display: grid; gap: 16px; }
 .session-panel { border: 1px solid var(--line); border-radius: 15px; background: var(--panel); overflow: hidden; box-shadow: 0 8px 26px #080f0b1f; }

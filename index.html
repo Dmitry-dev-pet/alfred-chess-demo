@@ -49,8 +49,14 @@
         <details id="keyboard-move" class="keyboard-details">
           <summary>Ход с клавиатуры</summary>
           <form id="move-form" class="coordinate-form">
-            <label for="move-from">Откуда<select id="move-from" required disabled></select></label>
-            <label for="move-to">Куда<select id="move-to" required disabled></select></label>
+            <div class="coordinate-field">
+              <label for="move-from">Откуда</label>
+              <select id="move-from" required disabled></select>
+            </div>
+            <div class="coordinate-field">
+              <label for="move-to">Куда</label>
+              <select id="move-to" required disabled></select>
+            </div>
             <button id="move-submit" class="button button--primary" type="submit" disabled>Сделать ход</button>
           </form>
           <p class="fine-print">В списках только допустимые ходы. При превращении пешки появится выбор фигуры.</p>

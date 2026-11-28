@@ -1,6 +1,7 @@
 # Browser acceptance for UI v2
 
-`acceptance.py` is prepared acceptance code. **It has not yet been run in a browser.**
+`acceptance.py` provides real-browser acceptance for an exact source candidate.
+**Use the report from each actual run as evidence for its tested commit.**
 Static syntax review does not constitute browser acceptance.
 
 The script requires Python 3.9 or later, an existing installation of async

@@ -42,7 +42,7 @@ jobs:
             "engine/esca.wasm.gz": "5358298a211b20859ceb7b287e43a45ddb33fae6d59253652bd2c1c1e5843821",
             "engine/stockfish-19-lite-single.js": "d3344124ab067fb0b90ee77873bb8e9fbf5fc01bc525fe714b0f942581e889e6",
             "engine/stockfish-19-lite-single.wasm": "57ac2d72312aba346760e3f173f687a8c211208e97a87268436f7f0e10bb5387",
-            "index.html": "6a3ff7745253d38c795f18917b0f526419c08bbd66c5167bdda23fdb5fa5c1a9",
+            "index.html": "bba8942dc31dc9d2084d5561facf57e450eb7118354885f2f442aabc62fc3ff9",
             "licenses/cm-chessboard/CC-BY-SA-3.0.txt": "3f941b3b89cf7b8370ceb83cc76d2120d471b58735d8ca60238a751a48d7f72f",
             "licenses/cozy-chess/LICENSE": "e2e583de8c230aec253c6e83f312171f7d76f122caf9477ed2c8f42b7371f446",
             "licenses/esca-0.4.0/LICENSE": "1d9b07ead9c4aa3b803251c25537335d06eaad32a85ea78887dda2663e4a2f11",
@@ -87,7 +87,7 @@ jobs:
             "source/esca-wrapper/Cargo.toml": "32323be08f0056f2645e2c5a937d381d8d833d710a80a7736b9b45345cfb65d2",
             "source/esca-wrapper/README.md": "f497ce40e90d751dd7515021098f55dda062423507d0ce629c06b559d059b102",
             "source/esca-wrapper/src/lib.rs": "13a7678add29596e4e9fa527b1256fe41ce485e6c04c15f753b3da41d36faf69",
-            "styles.css": "e345d7f47ae5da5294de5805f403f323c814bc749f5e9ee21fbf818f3282a6bc",
+            "styles.css": "bb037041cb7f335bc0795a351061617885fca92b6700407dc3a6fef0e060b31d",
             "vendor/cm-chessboard/LICENSE": "ccf51777fa25224a3548f958a35e4e8ad06db976bd7e56d39bc4baf91fc2fa8e",
             "vendor/cm-chessboard/PROVENANCE.json": "7d66c58f5bc13b9a7eec4b4f1042212b738729b3886e794db0d40ac644ab6fa6",
             "vendor/cm-chessboard/assets/_chessboard-theme.scss": "454173876ff15568f825a2d2dca6b4724fafa20a6570309236ecb8db432e6a35",
@@ -118,7 +118,7 @@ jobs:
           }''')
           repository_only = json.loads(r'''{
             "docs/COACH_CONNECTION.md": "1f220677a0b840b7c015597d463b8c8fd038ecc57a2cce3ab25c7e0b9a9a2913",
-            "tests/README.md": "85f04fbec59c3f5d3e781f2e2d5f823e8a3fdd33e5b4b1d195ea1c77ded576a0",
+            "tests/README.md": "7c01483af168a31e007187ebe0d7973af1b6c1ebf1d32a5a35830aea17eca1e3",
             "tests/acceptance.py": "2d1cd7591760ca95080d1de9b3f39e99bc3e5d8d057a22baba5f6deeb2e0e6d0"
           }''')
           root = pathlib.Path.cwd().resolve()
